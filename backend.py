@@ -1,4 +1,5 @@
 import psycopg2
+import pandas as pd
 """Module for managing database"""
 
 
@@ -27,21 +28,62 @@ def create_table():
     conn.close()
 
 
-def insert_into_table(model, company, airplane_type, spread, length, height, surface_area, mass, maximum_velocity, flying_velocitoy, mach_number):
+def insert_into_table(model, company, airplane_type, spread, length, height, surface_area, mass, maximum_velocity, flying_velocity, mach_number):
     """
     Insert data into database table
 
-    :return: row in table
+    :param model: string
+    :param company: string
+    :param airplane_type: string
+    :param spread: float
+    :param length: float
+    :param height: float
+    :param surface_area: float
+    :param mass: integer
+    :param maximum_velocity: integer
+    :param flying_velocity: integer
+    :param mach_number: float
+    :return: new row
     """
     conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
     cur = conn.cursor()
     cur.execute("INSERT INTO airplanes (model, company, type, spread, length, height, surface_area, mass, "
                 "maximum_velocity, flying_velocity, mach_number)"
                 " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
-                % (model, company, airplane_type, spread, length, height, surface_area, mass, maximum_velocity, flying_velocitoy, mach_number))
+                % (model, company, airplane_type, spread, length, height, surface_area, mass, maximum_velocity, flying_velocity, mach_number))
     conn.commit()
     conn.close()
 
 
-# insert_into_table("707", "Boeing", "Passenger", 44.42, 46.61, 12.93, 0, 66406, 0, 972, 0)
+def view_table():
+    """
+    Selecting all data from table
 
+    :return: all rows from table
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    rows = pd.read_sql("SELECT * FROM airplanes", conn)
+    print(rows.to_string(index=False))
+    conn.close()
+
+
+def delete_from_table(airplane_id):
+    """
+    Delete from table by id
+
+    :param airplane_id: integer
+    :return: deleted row
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    cur = conn.cursor()
+    cur.execute("DELETE FROM airplanes WHERE id=%s", (airplane_id,))
+    conn.commit()
+    conn.close()
+
+
+# view_table()
+
+# insert_into_table("707", "Boeing", "Passenger", 44.42, 46.61, 12.93, 0, 66406, 0, 972, 0)
+# insert_into_table("B-47E Statojet", "Boeing", "Military", 35.63, 33.48, 8.5, 132.7, 366300, 975, 0, 0.9)
+# delete_from_table(3)
+view_table()
