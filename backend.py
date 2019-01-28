@@ -119,10 +119,11 @@ def delete_from_table(airplane_id):
     conn.close()
 
 
-def update_table(airplane_id, column, new_value):
+def update_table(table_name, airplane_id, column, new_value):
     """
     Update value in row
 
+    :param table_name: string
     :param airplane_id: integer
     :param column: string
     :param new_value: string/float/integer
@@ -130,7 +131,7 @@ def update_table(airplane_id, column, new_value):
     """
     conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
     cur = conn.cursor()
-    update_sql = "UPDATE airplanes SET {}='%s' WHERE id=%s".format(column) % (new_value, airplane_id)
+    update_sql = "UPDATE {} SET {}='%s' WHERE id=%s".format(table_name, column) % (new_value, airplane_id)
     cur.execute(update_sql)
     conn.commit()
     conn.close()
@@ -178,3 +179,5 @@ def print_company_models(company_name):
 # create_table_details()
 # insert_into_table_details(6, "787", "Boeing", 2010, 678)
 # view_table("airplanes_details")
+# update_table("airplanes", 9, "mach_number", 3.56)
+# view_table("airplanes")
