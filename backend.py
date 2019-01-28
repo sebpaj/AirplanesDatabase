@@ -28,6 +28,24 @@ def create_table():
     conn.close()
 
 
+def create_table_details():
+    """
+    Create table contain details about airplane
+
+    :return: table
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS airplanes_details("
+                "ID INTEGER,"
+                "model TEXT,"
+                "company TEXT,"
+                "production_year INTEGER,"
+                "number_of_airplanes INTEGER)")
+    conn.commit()
+    conn.close()
+
+
 def insert_into_table(model, company, airplane_type, spread, length, height, surface_area, mass, maximum_velocity, flying_velocity, mach_number):
     """
     Insert data into database table
@@ -55,14 +73,34 @@ def insert_into_table(model, company, airplane_type, spread, length, height, sur
     conn.close()
 
 
-def view_table():
+def insert_into_table_details(airplane_id, model, company, production_year, number_of_airplanes):
+    """
+    Insert data into table airplanes_details
+
+    :param airplane_id: integer
+    :param model: string
+    :param company: string
+    :param production_year: integer
+    :param number_of_airplanes: integer
+    :return: new row in the table
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    cur = conn.cursor()
+    cur.execute("INSERT INTO airplanes_details (ID, model, company, production_year, number_of_airplanes)"
+                " VALUES('%s', '%s', '%s', '%s', '%s')" % (airplane_id, model, company, production_year, number_of_airplanes))
+    conn.commit()
+    conn.close()
+
+
+def view_table(table_name):
     """
     Selecting all data from table
 
+    :param table_name: string
     :return: all rows from table
     """
     conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
-    rows = pd.read_sql("SELECT * FROM airplanes", conn)
+    rows = pd.read_sql("SELECT * FROM {}".format(table_name), conn)
     print(rows.to_string(index=False))
     conn.close()
 
@@ -111,6 +149,18 @@ def top_5(column):
     conn.close()
 
 
+def print_company_models(company_name):
+    """
+    Print all models for defined company
+
+    :param company_name: string
+    :return: all rows with defined company
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    rows = pd.read_sql("SELECT * FROM airplanes WHERE company='%s'" % company_name, conn)
+    print(rows.to_string(index=False))
+    conn.close()
+
 # view_table()
 # insert_into_table("707", "Boeing", "Passenger", 44.42, 46.61, 12.93, 0, 66406, 0, 972, 0)
 # insert_into_table("B-47E Statojet", "Boeing", "Military", 35.63, 33.48, 8.5, 132.7, 366300, 975, 0, 0.9)
@@ -123,4 +173,8 @@ def top_5(column):
 # view_table()
 # update_table(8, "company", "North American Aviation")
 # view_table()
-top_5("flying_velocity")
+# top_5("model")
+# print_company_models("Boeing")
+# create_table_details()
+# insert_into_table_details(6, "787", "Boeing", 2010, 678)
+# view_table("airplanes_details")
