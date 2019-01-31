@@ -162,22 +162,33 @@ def print_company_models(company_name):
     print(rows.to_string(index=False))
     conn.close()
 
-# view_table()
-# insert_into_table("707", "Boeing", "Passenger", 44.42, 46.61, 12.93, 0, 66406, 0, 972, 0)
-# insert_into_table("B-47E Statojet", "Boeing", "Military", 35.63, 33.48, 8.5, 132.7, 366300, 975, 0, 0.9)
-# insert_into_table("787", "Boeing", "Passenger", 60, 63, 16.92, 325, 115000, 945, 903, 0.89)
-# insert_into_table("General Dynamics F-16 Fighting Falcon", "Lockheed Martin", "Military", 9.8, 14.8, 4.8, 27.87, 8272,
-#                  2300, 1000, 2.02)
-# insert_into_table("X-15", "North American Aviation", "Military", 6.8, 15.45, 4.12, 18.6, 6620, 7274, 0, 6)
-# insert_into_table("SR-71 Blackbird", "Lockheed", "Military", 16.94, 32.34, 5.64, 167.3, 27216, 3530, 3173, 3.56)
-# delete_from_table(3)
-# view_table()
-# update_table(8, "company", "North American Aviation")
-# view_table()
-# top_5("model")
-# print_company_models("Boeing")
-# create_table_details()
-# insert_into_table_details(6, "787", "Boeing", 2010, 678)
-# view_table("airplanes_details")
-# update_table("airplanes", 9, "mach_number", 3.56)
-# view_table("airplanes")
+
+def join_two_tables():
+    """
+    Join two tables as inner join
+
+    :return:
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    rows = pd.read_sql("SELECT * FROM airplanes INNER JOIN airplanes_details ON (airplanes.id = airplanes_details.id)", conn)
+    print(rows.to_string(index=False))
+    conn.close()
+
+
+def show_tables():
+    """
+    Show all available tables in database
+
+    :return:
+    """
+    conn = psycopg2.connect("dbname='Airplanes' user='postgres' password='passtosql12' host='localhost' port='5432'")
+    cur = conn.cursor()
+    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_schema,"
+                "table_name")
+    tables = cur.fetchall()
+    for table in tables:
+        print(table[0])
+    conn.close()
+
+
+show_tables()
